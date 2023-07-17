@@ -1,10 +1,13 @@
 import { GameData } from "../Data/GameData";
 import { Enum_OnlineParam } from "../Def/EnumDef";
+import { PlatformAdapter } from "./SDKBase";
 
 
 class _SDKManager {
     OnlineConfig: Map<Enum_OnlineParam, string> = new Map();
     BeginRecordTime: number;
+
+    adapter: PlatformAdapter;
     async Init() {
         return Promise.resolve(true);
     }

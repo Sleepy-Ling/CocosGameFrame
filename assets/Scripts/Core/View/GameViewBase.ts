@@ -1,7 +1,8 @@
 
-import { Enum_GameOjectsType, Enum_GameState } from '../Def/EnumDef';
-import GameObjectBase from '../GameObjects/GameObjectBase';
-import { GameObjectsManagerBase } from '../Manager/GameObjectsManagerBase';
+
+import { Enum_GameState, Enum_GameOjectsType } from '../../Def/EnumDef';
+import GameObjectBase from '../../GameObjects/GameObjectBase';
+import { GameObjectsManagerBase } from '../../Manager/GameObjectsManagerBase';
 import { ViewBase, ViewParamBase } from './ViewBase';
 
 export class GameViewBaseParam extends ViewParamBase {

@@ -1,4 +1,4 @@
-import { AudioType, AssetBundleEnum, AtlasType } from "../Def/EnumDef"
+import { AudioType, Enum_AssetBundle, AtlasType } from "../../Def/EnumDef"
 
 
 class _Util {
@@ -27,13 +27,13 @@ class _AudioUtil {
 
     public async PlayBGM(name: AudioType, boolLoop = true) {
         if (name == AudioType.None) { return }
-        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(AssetBundleEnum.audio, name)
+        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.audio, name)
         cc.audioEngine.playMusic(audio, boolLoop)
     }
 
     public async PlayEffect(name: AudioType, loop: boolean = false): Promise<number> {
         if (name == AudioType.None) { return }
-        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(AssetBundleEnum.audio, name)
+        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.audio, name)
         return cc.audioEngine.playEffect(audio, loop)
     }
 
@@ -350,29 +350,45 @@ class _ResUtil {
         })
     }
 
+    public ParseAssetRes(BundleName: Enum_AssetBundle | string, assets: cc.Asset[]) {
+        // this.ResData[BundleName] = bundle;
+        if (this.ResData[BundleName] == null) {
+            this.ResData[BundleName] = []
+        }
 
-    public async LoadAtlas(sprite: cc.Sprite, dicName: string, picName: string, atlasType: AtlasType = AtlasType.default,) {
-        let atlasPath: string = dicName + '/' + atlasType;
-        if (!cc.sys.isBrowser) {
-            let asset = await this.LoadAssetRes<cc.SpriteAtlas>(AssetBundleEnum.atlas, atlasPath)
-            sprite.spriteFrame = asset.getSpriteFrame(picName);
-            if (sprite.spriteFrame == null) {
-                let texture2D = await this.LoadAssetRes<cc.Texture2D>(AssetBundleEnum.atlas, `${atlasType}/${picName}`);
-                sprite.spriteFrame = new cc.SpriteFrame(texture2D);
+        for (const s of assets) {
+            if (s.name.length > 0) {
+                this.ResData[BundleName][s.name] = s;
             }
-        } else {
-            let asset = await this.LoadAssetBundle(AssetBundleEnum.atlas)
-            asset.load(`${atlasType}/${picName}`, (err, res: cc.Texture2D) => {
-                if (err != null) {
-                    console.log("LoadAssetRes", AssetBundleEnum.atlas, `${atlasType}/${picName}`, "Fail", err)
-                    return
-                }
-                sprite.spriteFrame = new cc.SpriteFrame(res)
-            })
         }
     }
 
-    public async LoadAssetRes<T extends cc.Asset>(BundleName: AssetBundleEnum | string, path: string): Promise<T> {
+    public async LoadSpriteFrameFromAtlas(BundleName: Enum_AssetBundle | string, path: string, atlasType: AtlasType = AtlasType.default) {
+
+        let p = new Promise<cc.SpriteFrame>(async (resolve) => {
+            if (cc.sys.isBrowser) {
+                let tex = await this.LoadAssetRes<cc.Texture2D>(BundleName, path);
+                let sf = new cc.SpriteFrame(tex);
+                resolve(sf);
+            }
+            else {
+                let asset = await this.LoadAssetRes<cc.SpriteAtlas>(BundleName, atlasType)
+
+                let sf: cc.SpriteFrame = asset.getSpriteFrame(path);
+                if (!sf) {
+                    let tex = await this.LoadAssetRes<cc.Texture2D>(BundleName, path);
+                    sf = new cc.SpriteFrame(tex);
+                }
+                resolve(sf);
+            }
+
+        })
+
+        return p;
+
+    }
+
+    public async LoadAssetRes<T extends cc.Asset>(BundleName: Enum_AssetBundle | string, path: string): Promise<T> {
         return await new Promise(async (resolve, reject) => {
             if (this.ResData[BundleName] == null) {
                 this.ResData[BundleName] = []
@@ -391,10 +407,11 @@ class _ResUtil {
                     resolve(res)
                 })
             }
+
         })
     }
 
-    public async ReleaseAssetRes(BundleName: AssetBundleEnum | string, path: string) {
+    public async ReleaseAssetRes(BundleName: Enum_AssetBundle | string, path: string) {
         if (this.ResData[BundleName] == null) {
             return
         }
@@ -406,7 +423,7 @@ class _ResUtil {
         ab.release(path)
     }
 
-    public async LoadAssetBundle(BundleName: AssetBundleEnum | string): Promise<cc.AssetManager.Bundle> {
+    public async LoadAssetBundle(BundleName: Enum_AssetBundle | string): Promise<cc.AssetManager.Bundle> {
         return new Promise((resolve, reject) => {
             if (this.ABData[BundleName] != null) {
                 resolve(this.ABData[BundleName])

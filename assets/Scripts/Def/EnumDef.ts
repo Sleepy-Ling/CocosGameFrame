@@ -32,7 +32,7 @@ export enum ConfigType {
  * @enum {number}
  */
 
-export enum AssetBundleEnum {
+export enum Enum_AssetBundle {
     bg = "bg",
     BMFont = "BMFont",
     ui = "ui",

@@ -1,5 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
-const { ccclass, property } = _decorator;
+const { ccclass, property } = cc._decorator;
 enum Enum_LogLevel {
     Log = 1 << 0,
     Warn = 1 << 1,

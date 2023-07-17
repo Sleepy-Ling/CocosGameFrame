@@ -1,6 +1,6 @@
 
 import { Util } from '../Core/Util';
-import { UIName, AssetBundleEnum, Enum_Layer } from '../Def/EnumDef';
+import { UIName, Enum_AssetBundle, Enum_Layer } from '../Def/EnumDef';
 import PopUpItemBase from '../PopUp/PopUpItemBase';
 import { ViewBase, ViewParamBase } from '../View/ViewBase';
 class ViewData {
@@ -35,7 +35,7 @@ class _UIManager {
         if (viewData.load) { return }
         if (viewData.node == null) {
             viewData.load = true
-            let p1 = Util.Res.LoadAssetRes<cc.Prefab>(AssetBundleEnum.ui, UIName[viewData.modName]).then(async (prefab) => {
+            let p1 = Util.Res.LoadAssetRes<cc.Prefab>(Enum_AssetBundle.ui, UIName[viewData.modName]).then(async (prefab) => {
                 viewData.load = false
                 viewData.node = cc.instantiate(prefab) as cc.Node;
                 let preProcessSucc: boolean = await this.preProcessView(viewData);

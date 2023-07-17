@@ -16,7 +16,7 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Main extends cc.Component {
-    private _RefreshTime: number;
+    private _RefreshTime: number = 0;
 
     onLoad() {
         // var manager = cc.director.getCollisionManager();
@@ -63,6 +63,8 @@ export default class Main extends cc.Component {
             let date = new Date()
             let mTime = date.getTime();
             GameDataManager.update(mTime);
+
+            this._RefreshTime = 0;
         }
     }
 

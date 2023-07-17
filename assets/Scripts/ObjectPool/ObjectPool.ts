@@ -1,14 +1,13 @@
-import { _decorator, Component, Node } from 'cc';
-const { ccclass, property } = _decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass('ObjectPool')
 class _ObjectPool {
-    private _pool: { [key: string]: Array<Node> };
+    private _pool: { [key: string]: Array<cc.Node> };
     constructor() {
         this._pool = {};
     }
 
-    put(key: string, obj: Node) {
+    put(key: string, obj: cc.Node) {
         if (this._pool[key] == null) {
             this._pool[key] = [];
         }

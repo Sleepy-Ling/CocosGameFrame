@@ -1,7 +1,7 @@
 import { UIManager } from "../Core/UIManager";
 import { Util } from "../Core/Util";
 import { GameData } from "../Data/GameData";
-import { AssetBundleEnum, AudioType, ConfigType, EffectType, UIName } from "../Def/EnumDef";
+import { Enum_AssetBundle, AudioType, ConfigType, EffectType, UIName } from "../Def/EnumDef";
 import { CustomEvents } from "../Event/CustomEvents";
 import { EventDispatcher } from "../Event/EventDispatcher";
 import { AudioManager } from "./AudioManager";
@@ -56,7 +56,7 @@ class _PreLoadManager extends ManagerBase {
 
         console.time();
         for (let x = 0; x < AllConfigType.length; x++) {
-            let res = await Util.Res.LoadAssetRes<cc.JsonAsset>(AssetBundleEnum.config, ConfigType[AllConfigType[x]]);
+            let res = await Util.Res.LoadAssetRes<cc.JsonAsset>(Enum_AssetBundle.config, ConfigType[AllConfigType[x]]);
             ConfigManager.ParseData(ConfigType[AllConfigType[x]], res.json)
             this.curLoadCount++;
             EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
@@ -66,7 +66,7 @@ class _PreLoadManager extends ManagerBase {
 
         console.time();
         for (let x = 0; x < this._PreLoadEffect.length; x++) {
-            await Util.Res.LoadAssetRes<cc.Prefab>(AssetBundleEnum.effect, this._PreLoadEffect[x]);
+            await Util.Res.LoadAssetRes<cc.Prefab>(Enum_AssetBundle.effect, this._PreLoadEffect[x]);
             this.curLoadCount++;
             EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
         }
@@ -75,7 +75,7 @@ class _PreLoadManager extends ManagerBase {
 
         console.time();
         for (let x = 0; x < this._PreLoadModel.length; x++) {
-            await Util.Res.LoadAssetRes<cc.Prefab>(AssetBundleEnum.prefab, this._PreLoadModel[x]);
+            await Util.Res.LoadAssetRes<cc.Prefab>(Enum_AssetBundle.prefab, this._PreLoadModel[x]);
             this.curLoadCount++;
             EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
         }
@@ -84,7 +84,7 @@ class _PreLoadManager extends ManagerBase {
 
         console.time();
         for (let x = 0; x < this._PreLoadUI.length; x++) {
-            await Util.Res.LoadAssetRes<cc.Prefab>(AssetBundleEnum.ui, UIName[this._PreLoadUI[x]]);
+            await Util.Res.LoadAssetRes<cc.Prefab>(Enum_AssetBundle.ui, UIName[this._PreLoadUI[x]]);
             this.curLoadCount++;
             EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
         }
@@ -93,7 +93,7 @@ class _PreLoadManager extends ManagerBase {
 
         console.time();
         for (let x = 0; x < this._PreLoadAudio.length; x++) {
-            await Util.Res.LoadAssetRes<cc.AudioClip>(AssetBundleEnum.audio, this._PreLoadAudio[x]);
+            await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.audio, this._PreLoadAudio[x]);
             this.curLoadCount++;
             EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
         }

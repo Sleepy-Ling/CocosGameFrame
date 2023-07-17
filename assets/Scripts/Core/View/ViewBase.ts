@@ -1,8 +1,7 @@
-import { LogUtil } from '../Core/LogUtil';
-import { Enum_OnlineParam, Enum_Language, Enum_Orientation, AudioType } from '../Def/EnumDef';
-import { AudioManager } from '../Manager/AudioManager';
+import { Enum_Language, Enum_Orientation, AudioType } from '../../Def/EnumDef';
+import { AudioManager } from '../../Manager/AudioManager';
+import { LogUtil } from '../Utils/LogUtil';
 
-import { SDKManager } from '../SDK/SDKManager';
 import IViewBase from './IViewBase';
 const { ccclass, property } = cc._decorator;
 
@@ -11,7 +10,7 @@ export class ViewParamBase {
     openCallBack: Function;
 }
 
-@ccclass('ViewBase')
+@ccclass()
 export class ViewBase extends cc.Component implements IViewBase {
     @property(cc.Node)
     protected icon_AdList: cc.Node[] = [];
@@ -79,7 +78,7 @@ export class ViewBase extends cc.Component implements IViewBase {
      * @returns 
      */
     protected bindBtnClickEvent(btn: cc.Node, clickFuncName: string, target: cc.Node, compName: string, customEventData: string = "", clearOldListener: boolean = true) {
-        let button = btn.getComponent(cc.Button);
+        let button = btn.getComponent(cc.Button) || btn.addComponent(cc.Button);
         if (button == null) {
             LogUtil.Error("do not has button", btn);
             return;

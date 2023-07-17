@@ -1,8 +1,9 @@
-import { Enum_GameOjectsType, Enum_ColliderMask } from "../Def/EnumDef";
+import { Enum_GameOjectsType } from "../../Def/EnumDef";
+
 const { ccclass, property } = cc._decorator;
 
 /**游戏对象类 */
-@ccclass('GameObjectBase')
+@ccclass()
 export default abstract class GameObjectBase extends cc.Component {
     public abstract onGameStart(startInfo?): void
     public abstract onGameUpdate(info?): void
