@@ -1,22 +1,36 @@
-import GameObjectBase from "../GameObjects/GameObjectBase";
+
+import GameObjectBase, { GameObjectBaseInitParam } from "../Core/GameObjects/GameObjectBase";
+import { ObjectPool } from "../Core/ObjectPool/ObjectPool";
+import { LogUtil } from "../Core/Utils/LogUtil";
+import ManagerBase from "./ManagerBase";
 
 const { ccclass, property } = cc._decorator;
 
-@ccclass('GameObjectsManagerBase')
-export class GameObjectsManagerBase {
+@ccclass()
+export class GameObjectsManagerBase extends ManagerBase {
     /**当前游戏场景里面的对象 用于统一控制 */
     protected GameObjectsTable = new Map<String, GameObjectBase>();
 
-    public init() { }
+    public init(inf?: any) { return super.init() };
+
+    public getGameObjectByID(id: string) {
+        return this.GameObjectsTable.get(id);
+    }
 
     /**把游戏对象加入表里 */
-    public AddGameObjectIntoTable(gameObjectBase: GameObjectBase) {
-        let id = gameObjectBase.node.uuid;
+    public AddGameObjectIntoTable(gameObjectBase: GameObjectBase, startInf: GameObjectBaseInitParam = null) {
+        let id = gameObjectBase.getUUID();
         if (this.GameObjectsTable.has(id)) {
-            // Debug.Log("重复添加对象 " + id);
+            LogUtil.Log("重复添加对象 " + id, gameObjectBase.name);
             return;
         }
         this.GameObjectsTable.set(id, gameObjectBase);
+
+        // gameObjectBase.init(startInf);
+
+        if (startInf) {
+            gameObjectBase.onJoinScene(startInf);
+        }
     }
 
     /**
@@ -25,6 +39,10 @@ export class GameObjectsManagerBase {
      * @returns 
      */
     public RemoveGameObjectFromTable(gameObjectBase: GameObjectBase) {
+        if (gameObjectBase.node == null || !gameObjectBase.node.isValid) {
+            return;
+        }
+
         let id = gameObjectBase.node.uuid;
         if (!this.GameObjectsTable.has(id)) {
             return;
@@ -32,7 +50,6 @@ export class GameObjectsManagerBase {
 
         this.GameObjectsTable.delete(id);
         gameObjectBase.recover();
-
     }
 
     /**
@@ -50,17 +67,8 @@ export class GameObjectsManagerBase {
 
     /**获得该管理器对全部对象 （仅提供对象调用） */
     public GetAllGameObjects(): Array<GameObjectBase> {
-        let allObjects: Array<GameObjectBase> = [];
         let itor = this.GameObjectsTable.values();
-        while (1) {
-            let obj = itor.next().value;
-            if (obj == null) {
-                break;
-            }
-
-            allObjects.push(obj);
-        }
-        return allObjects;
+        return Array.from(itor);
     }
 
     public updateAllObjects(deltaTime: number) {
@@ -75,5 +83,24 @@ export class GameObjectsManagerBase {
         }
     }
 
+    public pauseAllGameObjects() {
+        this.GetAllGameObjects().forEach((obj) => {
+            obj.onGamePause();
+            obj.enabled = false;
+        })
+    }
+
+    public resumeAllGameObjects() {
+        this.GetAllGameObjects().forEach((obj) => {
+            obj.onGameResume();
+            obj.enabled = true;
+        })
+    }
+
+    public setAllObjectsGameEnd() {
+        this.GetAllGameObjects().forEach((obj) => {
+            obj.onGameEnd();
+        })
+    }
 }
 

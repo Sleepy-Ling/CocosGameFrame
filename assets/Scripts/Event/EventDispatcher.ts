@@ -9,7 +9,8 @@ export interface IEventObject {
     once: boolean;
 }
 
-class _EventDispatcher {
+/**自定义事件派发器 */
+export default class EventDispatcher {
     private _listenDic: { [key: string]: Array<IEventObject> } = {};
 
     constructor() {
@@ -24,7 +25,7 @@ class _EventDispatcher {
         else {
             for (const obj of listenArr) {
                 if (obj.target == target && func == obj.func) {
-                    console.error("listen same function");
+                    console.error("listen same function", eventName, func, target);
                     return;
                 }
             }
@@ -105,17 +106,15 @@ class _EventDispatcher {
 
     OffAllListenOfTarget(target: unknown) {
         for (let key in this._listenDic) {
-            let eventObj = this._listenDic[key]
-            for (const obj of eventObj) {
+            let listenArr = this._listenDic[key]
 
+            for (let i = listenArr.length - 1; i > -1; i--) {
+                let obj = listenArr[i];
                 if (obj.target == target) {
-                    this.OffListen(obj.name, obj.func, obj.target);
+                    listenArr.splice(i, 1);
                 }
             }
         }
     }
 }
-
-/**自定义事件派发器 */
-export const EventDispatcher = new _EventDispatcher();
 

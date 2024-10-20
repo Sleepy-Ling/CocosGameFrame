@@ -27,13 +27,13 @@ class _AudioUtil {
 
     public async PlayBGM(name: AudioType, boolLoop = true) {
         if (name == AudioType.None) { return }
-        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.audio, name)
+        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.Audio, name)
         cc.audioEngine.playMusic(audio, boolLoop)
     }
 
     public async PlayEffect(name: AudioType, loop: boolean = false): Promise<number> {
         if (name == AudioType.None) { return }
-        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.audio, name)
+        const audio = await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.Audio, name)
         return cc.audioEngine.playEffect(audio, loop)
     }
 

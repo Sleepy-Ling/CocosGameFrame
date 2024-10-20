@@ -33,14 +33,16 @@ export enum ConfigType {
  */
 
 export enum Enum_AssetBundle {
-    bg = "bg",
-    BMFont = "BMFont",
-    ui = "ui",
-    config = "config",
-    effect = "effect",
-    audio = "audio",
-    prefab = "prefab",
-    atlas = "atlas"
+    /**********基础分包************** */
+    /**音频 */
+    Audio = "Audio",
+    /**字体 */
+    Font = "Font",
+    /**浮窗 */
+    PopUpToast = "PopUpToast",
+    /**通用 */
+    Common = "Common"
+    /**********基础分包 end************** */
 }
 
 /**
@@ -141,8 +143,30 @@ export enum Enum_Layer {
     Pop,
     Loading,
     Background,
+    Guide,
+    recovery,
+
+    GM_Tool,
 }
 
+/**消息类型 */
+export enum Enum_EventType {
+    /**全局 */
+    Global,
+    /**ui层 */
+    UI,
+    /**游戏类 */
+    Game,
+    /**货币类 */
+    Currency,
+    /**体力类 */
+    Power,
 
+    /**飞机队伍类 */
+    PlaneTroop,
 
-
+    /**新手教学 */
+    Guide,
+    Debug,
+    Equipment,
+}

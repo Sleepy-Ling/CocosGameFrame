@@ -8,44 +8,37 @@
 import ManagerBase from "./ManagerBase";
 
 
-class _CameraManager extends ManagerBase {
+export default class CameraManager extends ManagerBase {
     protected mainCamera: cc.Camera;
-    protected scaleCamera: cc.Camera;
+    protected gameCamera: cc.Camera;
 
-    init(mainCamera: cc.Camera, scaleCamera?: cc.Camera) {
+    init(mainCamera: cc.Camera, gamingCamera?: cc.Camera) {
         this.mainCamera = mainCamera;
-        this.scaleCamera = scaleCamera;
+        this.gameCamera = gamingCamera;
 
         return super.init();
     }
 
-    focusOn(pos: cc.Vec2, rate: number, duration: number = 1) {
-        pos = this.scaleCamera.node.parent.convertToNodeSpaceAR(pos);
+    public setMainCameraLookAtPos2DInSingleParam(x?: number, y?: number, z?: number) {
+        // let localPos = this.mainCamera.node.getPosition();
+        // x = x || localPos.x;
+        // y = y || localPos.y;
 
-        let nowPos = this.mainCamera.node.getPosition();
-        this.scaleCamera.node.setPosition(nowPos);
-        this.scaleCamera.zoomRatio = this.mainCamera.zoomRatio;
-
-        cc.Tween.stopAllByTarget(this.scaleCamera);
-        cc.Tween.stopAllByTarget(this.scaleCamera.node);
-
-
-        cc.tween(this.scaleCamera).to(duration, { zoomRatio: rate }).start();
-        cc.tween(this.scaleCamera.node).to(duration, { x: pos.x, y: pos.y }, { easing: "backOut" }).start();
-
-
-        this.scaleCamera.node.setPosition(pos);
-        this.scaleCamera.zoomRatio = rate;
-
-        this.mainCamera.enabled = false;
-        this.scaleCamera.enabled = true;
-
+        this.mainCamera.node.setPosition(x, y);
     }
 
-    public reset() {
-        this.mainCamera.enabled = true;
-        this.scaleCamera.enabled = false;
+    public getMainCameraLocalPosition() {
+        let localPos = this.mainCamera.node.getPosition();
+
+        return localPos;
     }
+    
+    public getMainCamera() {
+        return this.mainCamera;
+    }
+
+    public getGameCamera() {
+        return this.gameCamera;
+    }
+
 }
-
-export const CameraManager = new _CameraManager();

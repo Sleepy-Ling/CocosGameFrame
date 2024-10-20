@@ -1,4 +1,4 @@
-import { Enum_Language, Enum_Orientation } from "../Def/EnumDef";
+import { Enum_Language, Enum_Orientation } from "../../Def/EnumDef";
 
 export default interface IViewBase {
     /**切换语言 */

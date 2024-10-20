@@ -1,32 +1,16 @@
-import { UIManager } from "../Core/UIManager";
-import { Util } from "../Core/Util";
-import { GameData } from "../Data/GameData";
-import { Enum_AssetBundle, AudioType, ConfigType, EffectType, UIName } from "../Def/EnumDef";
+import { GM } from "../Core/Global/GM";
+import { Util } from "../Core/Utils/Util";
+import { VIEW_DIR } from "../Def/ConstDef";
+import { Enum_AssetBundle, ConfigType, UIName, Enum_Layer, Enum_EventType } from "../Def/EnumDef";
 import { CustomEvents } from "../Event/CustomEvents";
-import { EventDispatcher } from "../Event/EventDispatcher";
-import { AudioManager } from "./AudioManager";
-import { ConfigManager } from "./ConfigManager";
+import ConfigManager from "./ConfigManager";
 import ManagerBase from "./ManagerBase";
+import UIManager from "./UIManager";
 
 /**预加载管理者 */
-class _PreLoadManager extends ManagerBase {
+export default class PreLoadManager extends ManagerBase {
     private _loadTotal: number = 0;
     private _curLoadCount: number = 0;
-
-    private _PreLoadEffect: EffectType[] = []
-    /**模型 */
-    private _PreLoadModel: string[] = [
-    ]
-
-    /**ui */
-    private _PreLoadUI: UIName[] = [
-    ]
-
-    /**音效 */
-    private _PreLoadAudio: AudioType[] = [
-    ];
-    _PreLoadTerrain: any;
-    _PreLoadBackGround: any;
 
     public get curLoadCount(): number {
         return this._curLoadCount
@@ -36,77 +20,104 @@ class _PreLoadManager extends ManagerBase {
 
     }
 
+    private _PreloadBundle: Enum_AssetBundle[] = [
+        Enum_AssetBundle.Config,
+        Enum_AssetBundle.Lobby,
+        Enum_AssetBundle.Font,
+        Enum_AssetBundle.Effect,
+        Enum_AssetBundle.LevelSelect,
+        Enum_AssetBundle.GamingCommon,
+    ]
+
+    private _preloadView: Array<{ bundle: Enum_AssetBundle, viewName: UIName }> = [
+        { bundle: Enum_AssetBundle.Common, viewName: UIName.SelectLevelView },
+        { bundle: Enum_AssetBundle.Common, viewName: UIName.FightPrepareView },
+
+    ]
+
     init(...inf: unknown[]): boolean {
         this._curLoadCount = 0;
 
+        this.curLoadCount += this._preloadView.length;
+
         return super.init(inf);
     }
-    
+
     async BeginLoad(): Promise<void> {
-        await UIManager.OpenUI(UIName.LoadingView);
-        console.log("BeginLoad")
-        let AllConfigType = Object.keys(ConfigType)
-        this._loadTotal = AllConfigType.length + this._PreLoadEffect.length
-            + this._PreLoadModel.length + this._PreLoadUI.length +
-            this._PreLoadAudio.length + this._PreLoadTerrain.length + this._PreLoadBackGround.length;
+        await GM.uiManager.OpenUI(UIName.LoadingView, null, null, Enum_Layer.Loading);
 
+        const uiEventDispatcher = GM.eventDispatcherManager.getEventDispatcher(Enum_EventType.UI);
+
+        let promiseList: Promise<any>[] = [];
         this.curLoadCount = 0;
+        this._loadTotal = 0;
 
-        console.time("total");
+        let assetNameList: Array<{ bundle: string, name: string }> = [];
+        for (let i = 0; i < this._PreloadBundle.length; i++) {
+            const element = this._PreloadBundle[i];
+            let p = Util.Res.LoadAssetBundle(element).then((bundle) => {
+                console.log("finish loading bundle", bundle.name);
 
-        console.time();
-        for (let x = 0; x < AllConfigType.length; x++) {
-            let res = await Util.Res.LoadAssetRes<cc.JsonAsset>(Enum_AssetBundle.config, ConfigType[AllConfigType[x]]);
-            ConfigManager.ParseData(ConfigType[AllConfigType[x]], res.json)
-            this.curLoadCount++;
-            EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
+                const assetInf = bundle["_config"]["paths"]["_map"];
+
+                for (const key in assetInf) {
+                    assetNameList.push({ bundle: element, name: key });
+                }
+            });
+            promiseList.push(p);
         }
-        console.timeEnd();
-        console.log("Config PreLoad Complete")
 
-        console.time();
-        for (let x = 0; x < this._PreLoadEffect.length; x++) {
-            await Util.Res.LoadAssetRes<cc.Prefab>(Enum_AssetBundle.effect, this._PreLoadEffect[x]);
-            this.curLoadCount++;
-            EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
+        await Promise.all(promiseList);
+
+        promiseList = [];
+
+
+        this._loadTotal += assetNameList.length;
+
+        for (const obj of assetNameList) {
+            let pp = Util.Res.LoadAssetRes(obj.bundle, obj.name);
+            pp.then((assert) => {
+                this.curLoadCount++;
+                uiEventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
+
+                if (obj.bundle == Enum_AssetBundle.Config) {
+                    GM.configManager.ParseData(obj.name, (assert as cc.JsonAsset).json);
+                }
+            })
+            promiseList.push(pp);
         }
-        console.timeEnd();
-        console.log("Effect PreLoad Complete")
 
-        console.time();
-        for (let x = 0; x < this._PreLoadModel.length; x++) {
-            await Util.Res.LoadAssetRes<cc.Prefab>(Enum_AssetBundle.prefab, this._PreLoadModel[x]);
-            this.curLoadCount++;
-            EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
+
+        for (const inf of this._preloadView) {
+            let path: string = `${VIEW_DIR}/${UIName[inf.viewName]}`;
+
+            let pp = Util.Res.LoadAssetRes(inf.bundle, path);
+            pp.then((assert) => {
+                this.curLoadCount++;
+                uiEventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
+            })
+            promiseList.push(pp);
+
         }
-        console.timeEnd();
-        console.log("Model PreLoad Complete")
 
-        console.time();
-        for (let x = 0; x < this._PreLoadUI.length; x++) {
-            await Util.Res.LoadAssetRes<cc.Prefab>(Enum_AssetBundle.ui, UIName[this._PreLoadUI[x]]);
-            this.curLoadCount++;
-            EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
-        }
-        console.timeEnd();
-        console.log("UI PreLoad Complete")
-
-        console.time();
-        for (let x = 0; x < this._PreLoadAudio.length; x++) {
-            await Util.Res.LoadAssetRes<cc.AudioClip>(Enum_AssetBundle.audio, this._PreLoadAudio[x]);
-            this.curLoadCount++;
-            EventDispatcher.Emit(CustomEvents.LoadingProgress, this.curLoadCount / this._loadTotal);
-        }
-        console.timeEnd();
-        console.log("Audio PreLoad Complete")
-
-        console.timeEnd("total");
-
-        UIManager.CloseUIByName(UIName.LoadingView);
+        await Promise.all(promiseList);
 
         return Promise.resolve();
     }
 
-}
+    async BeginLoadActivity(activity_id: number) {
+        let table = GM.configManager.syncGetConfigByType(ConfigType.Table_SpecialActivity);
+        let cfg = table[activity_id];
+        let tableName = `Table_${cfg.reward}`;
+        let path: string = "Config";
 
-export const PreLoadManager = new _PreLoadManager()
+        tableName = `Table_${cfg.reward}`;
+        await Util.Res.LoadAssetRes<cc.JsonAsset>(Enum_AssetBundle.Activity, path + '/' + tableName).then((v) => {
+            console.log("活动配置 =>", v.json);
+
+            GM.configManager.ParseData(tableName, v.json);
+        });
+
+        return Promise.resolve(true);
+    }
+}

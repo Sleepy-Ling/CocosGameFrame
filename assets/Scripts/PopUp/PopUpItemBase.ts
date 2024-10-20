@@ -1,17 +1,27 @@
+import IRecoverObject from "../Core/GameObjects/IRecoverObject";
+
 const { ccclass, property } = cc._decorator;
 
+export class PopUpItemBaseParam {
+    closeCallBack: Function;
+}
+
 @ccclass
-export default class PopUpItemBase extends cc.Component {
+export default class PopUpItemBase extends cc.Component implements IRecoverObject {
     @property(cc.Label)
     label: cc.Label = null;
 
-    public show(str: string, duration: number, closeCallBack?: Function) {
+    param: PopUpItemBaseParam;
+
+    public show(str: string, duration: number, param: PopUpItemBaseParam) {
         this.label.string = str;
-        this.scheduleOnce(() => { this.onShowEnd(closeCallBack); }, duration);
-        this.onShowStart();
+        this.param = param;
+
+        this.scheduleOnce(() => { this.onShowEnd(param.closeCallBack); }, duration);
+        this.onShowStart(param);
     }
 
-    public onShowStart() {
+    public onShowStart(param: PopUpItemBaseParam) {
         this.node.scale = 0;
         let t = cc.tween(this.node);
         t.to(0.1, { scale: 1 });
@@ -35,9 +45,13 @@ export default class PopUpItemBase extends cc.Component {
 
     }
 
-    public recover() {
+    onRecover(): boolean {
         this.unscheduleAllCallbacks();
 
+        this.node.setParent(null);
+
+        return true;
     }
+
 
 }
