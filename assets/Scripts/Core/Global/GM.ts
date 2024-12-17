@@ -13,11 +13,11 @@ import ToastManager from "../../Manager/ToastManager";
 import { TutorialManager } from "../../Manager/TutorialManager";
 import UIManager from "../../Manager/UIManager";
 import { WX_AudioManager } from "../../Manager/WX_AudioManager";
-import { RedDotSystem } from "../../RedDot/RedDotSystem";
 
 import { Util } from "../Utils/Util";
 import { PerformanceMonitor } from "../../Manager/PerformanceMonitor";
 import Ad_Manager from "../../Manager/Ad_Manager";
+import { RedDotSystem } from "../RedDot/RedDotSystem";
 
 /**游戏主管 GameMaster */
 export namespace GM {
@@ -65,9 +65,12 @@ export namespace GM {
         timeStampManager.init();
         performanceMonitor.init();
         ad_Manager.init();
+
         //初始化红点系统
         const redDotSf = await Util.Res.LoadSpriteFrameFromAtlas(Enum_AssetBundle.Icon, null, "RedDot");
         RedDotSystem.init(redDotSf);
+
+        return Promise.resolve(true);
     }
 
     /**初始化音频管理者 */

@@ -41,7 +41,9 @@ export enum Enum_AssetBundle {
     /**浮窗 */
     PopUpToast = "PopUpToast",
     /**通用 */
-    Common = "Common"
+    Common = "Common",
+    Icon = "Icon",
+    Config = "Config",
     /**********基础分包 end************** */
 }
 

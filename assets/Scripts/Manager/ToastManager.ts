@@ -68,21 +68,4 @@ export default class ToastManager extends ManagerBase {
     protected RecoverToast(toastName: string, item: PopUpItemBase) {
         ObjectPool.put(toastName, item);
     }
-
-    // /**显示飘字提示 */
-    // ShowToast(toastID: number, content: string, duration: number = 2, closeCallBack?: Function) {
-    //     let param: PopUpItemBaseParam;
-    //     if (toastID == 0) {
-    //         let curParam: ToastParam = {
-    //             position: cc.v2(375, 1212),
-    //             offsetY: -50,
-    //             tweenTime: 0.5,
-    //             closeCallBack: closeCallBack
-    //         };
-
-    //         param = curParam;
-    //     }
-
-    //     GM.uiManager.ShowToast(toastID, content, duration, param);
-    // }
 }

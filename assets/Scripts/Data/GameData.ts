@@ -1,5 +1,6 @@
-import { Util } from "../Core/Util";
+import { Util } from "../Core/Utils/Util"
 
+ 
 abstract class SaveData {
     abstract name: string
     GetData() {
@@ -31,7 +32,6 @@ class SettingData extends SaveData {
     sound: number = 1
     vibration: number = 1
     effect: number = 1
-    buttonPosition: boolean = true;
     constructor() {
         super();
         cc.audioEngine.setMusicVolume(this.sound ? 1 : 0)

@@ -2,6 +2,7 @@ import { Enum_EventType } from "../Def/EnumDef";
 import EventDispatcher from "../Event/EventDispatcher";
 import ManagerBase from "./ManagerBase";
 
+/**事件派发器 */
 export default class EventDispatcherManager extends ManagerBase {
     protected dictionary: Map<Enum_EventType, EventDispatcher>;
     init(...inf: unknown[]): boolean {

@@ -21,18 +21,11 @@ export default class PreLoadManager extends ManagerBase {
     }
 
     private _PreloadBundle: Enum_AssetBundle[] = [
-        Enum_AssetBundle.Config,
-        Enum_AssetBundle.Lobby,
         Enum_AssetBundle.Font,
-        Enum_AssetBundle.Effect,
-        Enum_AssetBundle.LevelSelect,
-        Enum_AssetBundle.GamingCommon,
     ]
 
     private _preloadView: Array<{ bundle: Enum_AssetBundle, viewName: UIName }> = [
-        { bundle: Enum_AssetBundle.Common, viewName: UIName.SelectLevelView },
-        { bundle: Enum_AssetBundle.Common, viewName: UIName.FightPrepareView },
-
+ 
     ]
 
     init(...inf: unknown[]): boolean {
@@ -105,19 +98,5 @@ export default class PreLoadManager extends ManagerBase {
         return Promise.resolve();
     }
 
-    async BeginLoadActivity(activity_id: number) {
-        let table = GM.configManager.syncGetConfigByType(ConfigType.Table_SpecialActivity);
-        let cfg = table[activity_id];
-        let tableName = `Table_${cfg.reward}`;
-        let path: string = "Config";
-
-        tableName = `Table_${cfg.reward}`;
-        await Util.Res.LoadAssetRes<cc.JsonAsset>(Enum_AssetBundle.Activity, path + '/' + tableName).then((v) => {
-            console.log("活动配置 =>", v.json);
-
-            GM.configManager.ParseData(tableName, v.json);
-        });
-
-        return Promise.resolve(true);
-    }
+  
 }

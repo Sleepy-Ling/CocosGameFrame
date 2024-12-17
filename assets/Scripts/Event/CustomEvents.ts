@@ -13,7 +13,7 @@ export class CustomEvents {
     /**游戏从前台转到后台 */
     public static GameHideInBackground = "GameHideInBackground";
 
-
+    public static RedDotEvent: string = "RedDotEvent";
     /*------------游戏相关消息------------*/
     public static PauseGame = "PauseGame";
     public static ResumeGame = "ResumeGame";

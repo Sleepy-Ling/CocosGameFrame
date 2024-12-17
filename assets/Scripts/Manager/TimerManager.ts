@@ -147,6 +147,6 @@ export default class TimerManager extends ManagerBase {
 
     /**生成Uid */
     protected generateUID() {
-        return Util.getUidWithTimestamp();
+        return "";
     }
 }
